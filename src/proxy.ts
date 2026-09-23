@@ -9,7 +9,7 @@ export async function proxy(request: NextRequest) {
 
   const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
 
-  if (pathname === "/login") {
+  if (pathname === "/login" || pathname === "/signup") {
     if (token) return NextResponse.redirect(new URL("/", request.url));
     return NextResponse.next();
   }

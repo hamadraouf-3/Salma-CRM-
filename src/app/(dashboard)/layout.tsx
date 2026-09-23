@@ -3,6 +3,7 @@ import { requireUser } from "@/lib/session";
 import { Sidebar } from "@/components/sidebar";
 import { Topbar } from "@/components/topbar";
 import { FlashToast } from "@/components/flash-toast";
+import { RevealTableStart } from "@/components/reveal-table-start";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser();
@@ -12,6 +13,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <Suspense fallback={null}>
         <FlashToast />
       </Suspense>
+      <RevealTableStart />
       <Sidebar role={user.role} />
       <div className="flex min-w-0 flex-1 flex-col print:block">
         <Topbar name={user.name ?? user.email ?? "User"} role={user.role} userId={user.id} />

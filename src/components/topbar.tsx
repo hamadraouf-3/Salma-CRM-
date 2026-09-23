@@ -1,9 +1,8 @@
 import Link from "next/link";
-import { Menu, Search, Bell } from "lucide-react";
+import { Search, Bell } from "lucide-react";
 import { SignOutButton } from "@/components/sign-out-button";
+import { AccountMenu } from "@/components/account-menu";
 import { SearchShortcut } from "@/components/search-shortcut";
-import { LanguageSwitcher } from "@/components/language-switcher";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { type Role } from "@/lib/validations";
 import { MobileNav } from "@/components/mobile-nav";
 import { prisma } from "@/lib/prisma";
@@ -33,12 +32,7 @@ export async function Topbar({
   return (
     <header className="sticky top-0 z-40 flex h-16 items-center justify-between gap-2 border-b border-border bg-surface/85 px-3 backdrop-blur-md supports-[backdrop-filter]:bg-surface/75 sm:px-4 md:gap-4 md:px-6 print:hidden">
       <div className="flex items-center gap-2 md:hidden">
-        <details className="relative">
-          <summary className="flex size-10 cursor-pointer list-none items-center justify-center rounded-xl border border-border transition-colors hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">
-            <Menu className="size-5" />
-          </summary>
-          <MobileNav role={role} />
-        </details>
+        <MobileNav role={role} />
         <Link
           href="/search"
           className="flex size-10 items-center justify-center rounded-xl border border-border text-muted"
@@ -66,9 +60,6 @@ export async function Topbar({
       <SearchShortcut />
 
       <div className="flex items-center gap-1.5 sm:gap-2">
-        <ThemeToggle />
-        <LanguageSwitcher />
-
         <Link
           href="/tasks"
           className="relative flex size-10 items-center justify-center rounded-xl border border-border text-muted transition-colors hover:bg-background hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
@@ -94,6 +85,7 @@ export async function Topbar({
             {name.slice(0, 1)}
           </div>
         </Link>
+        <AccountMenu name={name} roleName={roleLabel(dict, role)} isAdmin={role === "ADMIN"} />
         <SignOutButton />
       </div>
     </header>

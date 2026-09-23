@@ -24,6 +24,8 @@
       "other": "{count} overdue tasks"
     },
     "sign_out": "Sign out",
+    "account_menu": "Account menu",
+    "settings": "Settings",
     "theme_light": "Switch to light mode",
     "theme_dark": "Switch to dark mode"
   },
@@ -715,7 +717,17 @@
     "emailAddress": "Email address",
     "password": "Password",
     "signingIn": "Signing in...",
-    "invalidCredentials": "Invalid email or password"
+    "invalidCredentials": "Invalid email or password",
+    "noAccount": "Don't have an account?",
+    "signUp": "Create an account"
+  },
+  "signup": {
+    "title": "Create an account",
+    "name": "Name",
+    "confirmPassword": "Confirm password",
+    "submit": "Create account",
+    "submitting": "Creating account...",
+    "haveAccount": "Already have an account?"
   },
   "messages": {
     "Company name is required": "Company name is required",

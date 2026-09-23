@@ -28,6 +28,8 @@
       "other": "{count} مهمة متأخرة"
     },
     "sign_out": "تسجيل الخروج",
+    "account_menu": "قائمة الحساب",
+    "settings": "الإعدادات",
     "theme_light": "التبديل إلى الوضع الفاتح",
     "theme_dark": "التبديل إلى الوضع الداكن"
   },
@@ -739,7 +741,17 @@
     "emailAddress": "عنوان البريد الإلكتروني",
     "password": "كلمة المرور",
     "signingIn": "جارٍ تسجيل الدخول...",
-    "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة"
+    "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+    "noAccount": "ما عندك حساب؟",
+    "signUp": "إنشاء حساب"
+  },
+  "signup": {
+    "title": "إنشاء حساب",
+    "name": "الاسم",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "submit": "إنشاء الحساب",
+    "submitting": "جارٍ إنشاء الحساب...",
+    "haveAccount": "عندك حساب؟"
   },
   "messages": {
     "Company name is required": "اسم الشركة مطلوب",

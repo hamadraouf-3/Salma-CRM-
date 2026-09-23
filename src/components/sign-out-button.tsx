@@ -9,7 +9,7 @@ export function SignOutButton() {
   return (
     <button
       onClick={() => signOut({ callbackUrl: "/login" })}
-      className="flex size-10 items-center justify-center gap-2 rounded-xl px-2 text-sm text-muted transition-colors hover:bg-background hover:text-foreground sm:w-auto sm:px-3"
+      className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-xl border border-border bg-surface px-2.5 text-sm font-medium text-foreground transition-colors hover:border-danger/40 hover:bg-danger-bg hover:text-danger sm:px-3"
       aria-label={dict.topbar.sign_out}
     >
       <LogOut className="size-4" />
