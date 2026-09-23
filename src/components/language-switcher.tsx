@@ -24,10 +24,10 @@ export function LanguageSwitcher() {
 
   return (
     <div
-      className="flex items-center gap-1 rounded-lg border border-border p-1 text-xs font-medium"
+      className="flex items-center gap-0.5 rounded-xl border border-border p-0.5 text-xs font-medium"
       aria-label={dict.language.label}
     >
-      <Languages className="ms-1 size-3.5 text-muted" />
+      <Languages className="ms-1 hidden size-3.5 text-muted sm:block" />
       {(["en", "ar"] as const).map((l) => (
         <button
           key={l}
@@ -35,7 +35,7 @@ export function LanguageSwitcher() {
           disabled={pending}
           onClick={() => switchTo(l)}
           className={cn(
-            "rounded-md px-2 py-1 transition-colors disabled:opacity-50",
+            "rounded-lg px-1.5 py-1 transition-colors disabled:opacity-50 sm:px-2",
             locale === l ? "bg-primary/10 text-primary" : "text-muted hover:text-foreground"
           )}
         >

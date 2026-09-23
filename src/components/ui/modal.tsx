@@ -43,7 +43,7 @@ export function Modal({
     >
       <div
         className={cn(
-          "animate-modal-in w-full max-w-lg rounded-xl border border-border bg-surface shadow-[var(--shadow-card-hover)]",
+          "animate-modal-in w-full max-w-lg rounded-2xl border border-border bg-surface shadow-[var(--shadow-card-hover)]",
           className
         )}
         onClick={(e) => e.stopPropagation()}

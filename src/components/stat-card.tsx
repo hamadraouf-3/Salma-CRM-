@@ -35,16 +35,16 @@ export function StatCard({
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-xl border border-border bg-surface shadow-[var(--shadow-card)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-card-hover)]",
-        featured ? "p-5" : "p-4"
+        "relative overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-card)] transition-all duration-200 [@media(hover:hover)]:hover:-translate-y-0.5 [@media(hover:hover)]:hover:shadow-[var(--shadow-card-hover)]",
+        featured ? "bg-gradient-to-br from-surface to-primary/8 p-5" : "p-4"
       )}
     >
-      <span className={cn("absolute inset-x-0 top-0 h-1", barClasses)} />
-      <div className="flex items-center justify-between">
+      <span className={cn("absolute inset-y-3 start-0 w-0.5 rounded-full", barClasses)} />
+      <div className="flex items-center justify-between gap-3 ps-2">
         <span className={cn("text-sm text-muted", featured && "font-medium")}>{label}</span>
         <div
           className={cn(
-            "flex items-center justify-center rounded-lg",
+            "flex shrink-0 items-center justify-center rounded-xl",
             featured ? "size-10" : "size-9",
             toneClasses
           )}
@@ -52,10 +52,10 @@ export function StatCard({
           <Icon className={featured ? "size-5" : "size-4.5"} />
         </div>
       </div>
-      <div className={cn("mt-2 font-semibold tracking-tight text-foreground", featured ? "text-3xl" : "text-2xl")}>
+      <div className={cn("mt-2 ps-2 font-semibold tracking-tight text-foreground", featured ? "text-3xl" : "text-2xl")}>
         {value}
       </div>
-      {hint ? <div className="mt-1 text-xs text-muted">{hint}</div> : null}
+      {hint ? <div className="mt-1 ps-2 text-xs text-muted">{hint}</div> : null}
     </div>
   );
 }

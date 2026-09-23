@@ -112,7 +112,7 @@ export function OpportunityBoard({
               <div
                 key={opportunity.id}
                 className={cn(
-                  "rounded-lg border bg-surface p-4 shadow-[var(--shadow-card)] transition-all duration-200 hover:shadow-[var(--shadow-card-hover)]",
+                  "rounded-2xl border bg-surface p-4 shadow-[var(--shadow-card)] transition-all duration-200 [@media(hover:hover)]:hover:shadow-[var(--shadow-card-hover)]",
                   stale ? "border-warning/40" : "border-border"
                 )}
               >

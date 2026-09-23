@@ -54,7 +54,7 @@ export function ThemeToggle() {
       onClick={toggle}
       aria-label={isDark ? dict.topbar.theme_light : dict.topbar.theme_dark}
       title={isDark ? dict.topbar.theme_light : dict.topbar.theme_dark}
-      className="flex size-9 items-center justify-center rounded-lg border border-border text-muted transition-colors hover:bg-background hover:text-foreground"
+      className="flex size-10 items-center justify-center rounded-xl border border-border text-muted transition-colors hover:bg-background hover:text-foreground"
     >
       {isDark ? <Sun className="size-4.5" /> : <Moon className="size-4.5" />}
     </button>

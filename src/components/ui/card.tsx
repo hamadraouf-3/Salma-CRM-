@@ -4,7 +4,7 @@ export function Card({ className, children }: { className?: string; children: Re
   return (
     <div
       className={cn(
-        "rounded-xl border border-border bg-surface shadow-[var(--shadow-card)] transition-shadow duration-200 hover:shadow-[var(--shadow-card-hover)]",
+        "rounded-2xl border border-border bg-surface shadow-[var(--shadow-card)] transition-shadow duration-200 [@media(hover:hover)]:hover:shadow-[var(--shadow-card-hover)]",
         className
       )}
     >

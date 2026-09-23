@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { BrandLogo } from "@/components/brand-logo";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { workspaceNavItems, managementNavItems } from "@/lib/nav-items";
@@ -24,7 +24,7 @@ function NavLink({
     <Link
       href={item.href}
       className={cn(
-        "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+        "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
         active ? "bg-primary/10 text-primary" : "text-muted hover:bg-background hover:text-foreground"
       )}
     >
@@ -50,12 +50,12 @@ export function Sidebar({ role }: { role: Role }) {
 
   return (
     <aside className="hidden w-64 shrink-0 flex-col border-e border-border bg-surface md:flex print:hidden">
-      <div className="flex h-16 items-center border-b border-border px-5">
-        <Image src="/logo.png" alt={dict.brand.name} width={450} height={137} className="h-8 w-auto" priority />
+      <div className="flex h-[4.75rem] items-center border-b border-border px-5">
+        <BrandLogo alt={dict.brand.name} size="sm" />
       </div>
       <nav className="flex-1 space-y-5 overflow-y-auto p-3">
         <div className="space-y-1">
-          <div className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted/70">
+          <div className="px-3 pb-1 text-[11px] font-semibold tracking-[0.16em] text-muted/80 uppercase">
             {dict.nav.section_workspace}
           </div>
           {workspaceNavItems
@@ -72,7 +72,7 @@ export function Sidebar({ role }: { role: Role }) {
 
         {visibleManagement.length > 0 ? (
           <div className="space-y-1">
-            <div className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted/70">
+            <div className="px-3 pb-1 text-[11px] font-semibold tracking-[0.16em] text-muted/80 uppercase">
               {dict.nav.section_management}
             </div>
             {visibleManagement.map((item) => (

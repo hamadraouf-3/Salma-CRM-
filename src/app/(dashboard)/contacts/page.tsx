@@ -237,7 +237,7 @@ export default async function ContactsPage({
                       trigger={
                         <button
                           type="button"
-                          className="inline-flex rounded-md p-1 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 hover:bg-background"
+                          className="inline-flex rounded-md p-1 opacity-100 transition-opacity hover:bg-background md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100"
                           aria-label={dict.contacts.editContactAria}
                         >
                           <Pencil className="size-4 text-muted hover:text-foreground" />

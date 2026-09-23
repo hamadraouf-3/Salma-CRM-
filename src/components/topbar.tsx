@@ -31,13 +31,22 @@ export async function Topbar({
   const dict = getDictionary(locale);
 
   return (
-    <header className="sticky top-0 z-40 flex h-16 items-center justify-between gap-4 border-b border-border bg-surface/80 px-4 backdrop-blur supports-[backdrop-filter]:bg-surface/60 md:px-6 print:hidden">
-      <details className="relative md:hidden">
-        <summary className="flex size-9 cursor-pointer list-none items-center justify-center rounded-lg border border-border transition-colors hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">
-          <Menu className="size-5" />
-        </summary>
-        <MobileNav role={role} />
-      </details>
+    <header className="sticky top-0 z-40 flex h-16 items-center justify-between gap-2 border-b border-border bg-surface/85 px-3 backdrop-blur-md supports-[backdrop-filter]:bg-surface/75 sm:px-4 md:gap-4 md:px-6 print:hidden">
+      <div className="flex items-center gap-2 md:hidden">
+        <details className="relative">
+          <summary className="flex size-10 cursor-pointer list-none items-center justify-center rounded-xl border border-border transition-colors hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">
+            <Menu className="size-5" />
+          </summary>
+          <MobileNav role={role} />
+        </details>
+        <Link
+          href="/search"
+          className="flex size-10 items-center justify-center rounded-xl border border-border text-muted"
+          aria-label={dict.topbar.search_placeholder}
+        >
+          <Search className="size-4" />
+        </Link>
+      </div>
 
       <form action="/search" method="get" className="hidden max-w-sm flex-1 md:block">
         <div className="relative">
@@ -56,13 +65,13 @@ export async function Topbar({
       </form>
       <SearchShortcut />
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-1.5 sm:gap-2">
         <ThemeToggle />
         <LanguageSwitcher />
 
         <Link
           href="/tasks"
-          className="relative flex size-9 items-center justify-center rounded-lg border border-border text-muted transition-colors hover:bg-background hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+          className="relative flex size-10 items-center justify-center rounded-xl border border-border text-muted transition-colors hover:bg-background hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
           title={plural(locale, overdueCount, dict.topbar.overdue_tasks)}
         >
           <Bell className="size-4.5" />

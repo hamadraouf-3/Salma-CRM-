@@ -136,7 +136,7 @@ export default async function LeadsPage({
                   {canWrite(user.role) ? (
                     <td className="px-4 py-3 text-end">
                       {l.status !== "CONVERTED" ? (
-                        <span className="inline-flex opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
+                        <span className="inline-flex opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
                           <ConfirmDeleteForm
                             action={deleteLead.bind(null, l.id)}
                             confirmMessage={dict.leads.deleteConfirm}

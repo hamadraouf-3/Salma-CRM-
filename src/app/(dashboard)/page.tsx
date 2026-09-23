@@ -214,7 +214,7 @@ export default async function DashboardHomePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold text-foreground">{dict.dashboard.title}</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">{dict.dashboard.title}</h1>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">

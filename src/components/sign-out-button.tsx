@@ -9,10 +9,11 @@ export function SignOutButton() {
   return (
     <button
       onClick={() => signOut({ callbackUrl: "/login" })}
-      className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted hover:bg-background hover:text-foreground transition-colors"
+      className="flex size-10 items-center justify-center gap-2 rounded-xl px-2 text-sm text-muted transition-colors hover:bg-background hover:text-foreground sm:w-auto sm:px-3"
+      aria-label={dict.topbar.sign_out}
     >
       <LogOut className="size-4" />
-      {dict.topbar.sign_out}
+      <span className="hidden sm:inline">{dict.topbar.sign_out}</span>
     </button>
   );
 }
