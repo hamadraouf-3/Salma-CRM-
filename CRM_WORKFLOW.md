@@ -280,9 +280,9 @@ implemented:
 - **Proposals/Quotations** as a distinct entity with an approval workflow, and a **distinct Meeting
   entity** — a meeting is logged as an Activity (`type: "MEETING"`) alongside calls, emails, and notes, not
   its own table with its own page.
-- **Document/file storage** — no object storage exists (a deliberate, standing decision to stay on
-  local SQLite rather than add S3/Postgres/Redis), so there's nowhere to attach RFPs, technical docs, or
-  signed proposals yet.
+- **Document/file storage** — no object storage exists yet (the database itself moved from SQLite to
+  PostgreSQL to support a real deployment, but nothing analogous to S3 was added), so there's nowhere to
+  attach RFPs, technical docs, or signed proposals yet.
 - **Multi-channel notifications**, a **general system-wide audit log** (the one audit log that exists —
   `SalesTargetAudit`, see the Sales Targets section above — is scoped specifically to target changes, not
   every record type), a **duplicate-review workflow** for already-existing records (today's duplicate

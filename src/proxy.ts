@@ -29,5 +29,8 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api/auth|_next/static|_next/image|favicon.ico).*)"],
+  // Excludes API auth routes, Next's own internals, and any request for a static file (anything with a
+  // file extension — favicon.ico, logo.png, etc.) so public assets referenced by unauthenticated pages
+  // like /login are never redirected to themselves.
+  matcher: ["/((?!api/auth|_next/static|_next/image|.*\\..*).*)"],
 };

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -49,11 +50,8 @@ export function Sidebar({ role }: { role: Role }) {
 
   return (
     <aside className="hidden w-64 shrink-0 flex-col border-e border-border bg-surface md:flex print:hidden">
-      <div className="flex h-16 items-center gap-2.5 border-b border-border px-5">
-        <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-hover font-bold text-primary-foreground shadow-sm shadow-primary/30">
-          S
-        </div>
-        <div className="text-sm font-semibold text-foreground">{dict.brand.name}</div>
+      <div className="flex h-16 items-center border-b border-border px-5">
+        <Image src="/logo.png" alt={dict.brand.name} width={450} height={137} className="h-8 w-auto" priority />
       </div>
       <nav className="flex-1 space-y-5 overflow-y-auto p-3">
         <div className="space-y-1">
