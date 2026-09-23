@@ -1,0 +1,316 @@
+// Prisma schema for the Sales CRM
+// SQLite datasource — see prisma.config.ts for the connection URL
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// SQLite has no native enum type, so role/status/stage fields below are
+// plain strings. The allowed values are enforced in src/lib/validations.ts.
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         String   @default("ACCOUNT_MANAGER") // ADMIN | ACCOUNT_MANAGER | MANAGEMENT
+  title        String? // job title, e.g. "VP of Sales"
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  companies            Company[]          @relation("CompanyOwner")
+  contacts             Contact[]          @relation("ContactOwner")
+  leads                Lead[]             @relation("LeadOwner")
+  opportunities        Opportunity[]      @relation("OpportunityOwner")
+  createdOpportunities Opportunity[]      @relation("OpportunityCreatedBy")
+  tasks                Task[]             @relation("TaskAssignee")
+  activities           Activity[]
+  salesTargets         SalesTarget[]      @relation("TargetOwner")
+  createdTargets       SalesTarget[]      @relation("TargetCreatedBy")
+  targetAuditLogs      SalesTargetAudit[] @relation("TargetAuditActor")
+}
+
+/// An Account: a customer or prospect organization.
+model Company {
+  id            String   @id @default(cuid())
+  name          String
+  legalName     String?
+  website       String?
+  industry      String?
+  companySize   String? // e.g. "1-10", "11-50", "51-200", "201-500", "500+"
+  country       String?
+  city          String?
+  phone         String?
+  email         String?
+  address       String?
+  accountStatus String   @default("PROSPECT") // PROSPECT | ACTIVE_CUSTOMER | FORMER_CUSTOMER | PARTNER
+  source        String? // how this account originated
+  notes         String?
+  ownerId       String
+  owner         User     @relation("CompanyOwner", fields: [ownerId], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  contacts      Contact[]
+  opportunities Opportunity[]
+  leads         Lead[]        @relation("LeadConvertedAccount")
+  activities    Activity[]
+  tasks         Task[]
+
+  @@index([ownerId])
+  @@index([accountStatus])
+}
+
+model Tag {
+  id   String @id @default(cuid())
+  name String @unique
+
+  contacts Contact[]
+}
+
+model Contact {
+  id                     String   @id @default(cuid())
+  name                   String
+  jobTitle               String?
+  department             String?
+  email                  String?
+  phone                  String?
+  linkedIn               String?
+  isDecisionMaker        Boolean  @default(false)
+  isPrimary              Boolean  @default(false)
+  source                 String? // e.g. website, referral, cold call
+  preferredContactMethod String? // EMAIL | PHONE | MOBILE | WHATSAPP
+  status                 String   @default("LEAD") // LEAD | QUALIFIED | CUSTOMER | LOST
+  notes                  String?
+  companyId              String?
+  company                Company? @relation(fields: [companyId], references: [id])
+  ownerId                String
+  owner                  User     @relation("ContactOwner", fields: [ownerId], references: [id])
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  tags          Tag[]
+  opportunities Opportunity[]
+  leads         Lead[]        @relation("LeadConvertedContact")
+  tasks         Task[]
+  activities    Activity[]
+
+  @@index([ownerId])
+  @@index([status])
+  @@index([companyId])
+}
+
+/// A pre-qualification Lead. Converts into an Account + Contact + Opportunity once qualified.
+model Lead {
+  id             String    @id @default(cuid())
+  name           String // lead/person name
+  companyName    String? // free-text company name until converted into a real Account
+  jobTitle       String?
+  email          String?
+  phone          String?
+  industry       String?
+  source         String? // WEBSITE | LINKEDIN | REFERRAL | EMAIL | PHONE | EVENT | PARTNER | ADVERTISEMENT | DIRECT_OUTREACH | OTHER
+  status         String    @default("NEW") // NEW | CONTACTED | QUALIFIED | UNQUALIFIED | CONVERTED | LOST
+  score          Int       @default(0)
+  notes          String?
+  ownerId        String
+  owner          User      @relation("LeadOwner", fields: [ownerId], references: [id])
+  lastActivityAt DateTime?
+  nextFollowUpAt DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Set once the lead is converted; the Lead row is kept for history rather than deleted.
+  convertedAt            DateTime?
+  convertedAccountId     String?
+  convertedAccount       Company?     @relation("LeadConvertedAccount", fields: [convertedAccountId], references: [id])
+  convertedContactId     String?
+  convertedContact       Contact?     @relation("LeadConvertedContact", fields: [convertedContactId], references: [id])
+  convertedOpportunityId String?      @unique
+  convertedOpportunity   Opportunity? @relation("LeadConvertedOpportunity", fields: [convertedOpportunityId], references: [id])
+
+  tasks      Task[]
+  activities Activity[]
+
+  @@index([ownerId])
+  @@index([status])
+}
+
+/// NEW, WON, and LOST (`opportunityId: null`, `isSystem: true`) are fixed system stages seeded by
+/// migration 20260922142817_add_pipeline_stages — id doubles as the value stored in Opportunity.stage,
+/// shared by every Opportunity, and can't be renamed or deleted. Anything else is a custom workflow step
+/// that belongs to exactly one Opportunity (`opportunityId` set, `isSystem: false`) — managed by the
+/// System Admin from that Opportunity's own detail page, and never shared with or copied to any other
+/// Opportunity.
+model PipelineStage {
+  id                 String       @id @default(cuid())
+  label              String
+  order              Int
+  isSystem           Boolean      @default(false)
+  defaultProbability Int          @default(50)
+  opportunityId      String?
+  opportunity        Opportunity? @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  @@index([opportunityId])
+}
+
+model Opportunity {
+  id                String    @id @default(cuid())
+  title             String
+  value             Float     @default(0)
+  currency          String    @default("JOD")
+  stage             String    @default("NEW") // NEW | CONTACTED | PROPOSAL | NEGOTIATION | WON | LOST
+  probability       Int       @default(10) // 0-100, used for the weighted forecast
+  lostReason        String?
+  stageChangedAt    DateTime  @default(now()) // used to flag stale/aging deals
+  source            String? // lead source this opportunity originated from
+  competitor        String?
+  nextAction        String?
+  notes             String? // general internal notes, separate from nextAction
+  priority          String? // Sales priority: LOW | MEDIUM | HIGH | URGENT
+  opportunityType   String? // NEW_BUSINESS | UPSELL | RENEWAL | OTHER
+  expectedCloseDate DateTime?
+  closedAt          DateTime?
+  // Who can see this opportunity beyond its owner and Admin/Management: OWNER (default, isolated like
+  // every other record) or EVERYONE (visible to every Account Manager too). Only the System Admin can
+  // set this — see `resolveVisibility` in src/lib/scope.ts.
+  visibility        String    @default("OWNER")
+
+  companyId   String?
+  company     Company? @relation(fields: [companyId], references: [id])
+  contactId   String
+  contact     Contact  @relation(fields: [contactId], references: [id])
+  ownerId     String
+  owner       User     @relation("OpportunityOwner", fields: [ownerId], references: [id])
+  // The user who actually registered this opportunity — distinct from `owner`, since an Admin can
+  // register a deal and assign a different Account Manager as its owner. Nullable only because rows
+  // created before this field existed have no historical creator to backfill.
+  createdById String?
+  createdBy   User?    @relation("OpportunityCreatedBy", fields: [createdById], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  convertedFromLead Lead?           @relation("LeadConvertedOpportunity")
+  tasks             Task[]
+  activities        Activity[]
+  requirement       Requirement?
+  pipelineStages    PipelineStage[]
+
+  @@index([ownerId])
+  @@index([stage])
+  @@index([contactId])
+  @@index([companyId])
+}
+
+/// Structured discovery/requirements data for an Opportunity — Phase 4 of the CRM roadmap.
+model Requirement {
+  id                     String      @id @default(cuid())
+  opportunityId          String      @unique
+  opportunity            Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  businessProblem        String?
+  customerObjective      String?
+  requiredSolution       String?
+  functionalRequirements String?
+  technicalRequirements  String?
+  deployment             String? // CLOUD | ON_PREMISE | HYBRID | UNKNOWN
+  infrastructureNotes    String?
+  createdAt              DateTime    @default(now())
+  updatedAt              DateTime    @updatedAt
+}
+
+model Task {
+  id            String       @id @default(cuid())
+  title         String
+  description   String?
+  dueDate       DateTime?
+  done          Boolean      @default(false)
+  priority      String       @default("MEDIUM") // LOW | MEDIUM | HIGH
+  type          String       @default("OTHER") // CALL | MEETING | EMAIL | FOLLOW_UP | OTHER
+  assigneeId    String
+  assignee      User         @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  leadId        String?
+  lead          Lead?        @relation(fields: [leadId], references: [id])
+  companyId     String?
+  company       Company?     @relation(fields: [companyId], references: [id])
+  contactId     String?
+  contact       Contact?     @relation(fields: [contactId], references: [id])
+  opportunityId String?
+  opportunity   Opportunity? @relation(fields: [opportunityId], references: [id])
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([assigneeId])
+  @@index([done])
+}
+
+model Activity {
+  id            String       @id @default(cuid())
+  type          String // CALL | EMAIL | MEETING | DEMO | FOLLOW_UP | NOTE | PROPOSAL | STAGE_CHANGE
+  content       String
+  userId        String
+  user          User         @relation(fields: [userId], references: [id])
+  leadId        String?
+  lead          Lead?        @relation(fields: [leadId], references: [id])
+  companyId     String?
+  company       Company?     @relation(fields: [companyId], references: [id])
+  contactId     String?
+  contact       Contact?     @relation(fields: [contactId], references: [id])
+  opportunityId String?
+  opportunity   Opportunity? @relation(fields: [opportunityId], references: [id])
+  createdAt     DateTime     @default(now())
+
+  @@index([contactId])
+  @@index([opportunityId])
+}
+
+/// A performance target assigned to one Account Manager for one period. Owned by the
+/// Account Manager (drives what they see) but only ever created/edited by an ADMIN —
+/// see `stageGateCheck`-style helpers in src/lib/targets.ts for how achievement is
+/// computed from actual Opportunity data rather than stored as a manual field.
+model SalesTarget {
+  id          String   @id @default(cuid())
+  userId      String // the Account Manager this target belongs to
+  user        User     @relation("TargetOwner", fields: [userId], references: [id])
+  targetType  String // REVENUE | DEALS_WON
+  periodType  String // MONTHLY | QUARTERLY | YEARLY
+  periodStart DateTime // inclusive
+  periodEnd   DateTime // exclusive
+  targetValue Float // an amount for REVENUE, a plain count for DEALS_WON
+  currency    String   @default("JOD") // only meaningful for REVENUE targets
+  status      String   @default("ACTIVE") // DRAFT | ACTIVE | COMPLETED | ARCHIVED
+  createdById String // the ADMIN who created/last assigned this target
+  createdBy   User     @relation("TargetCreatedBy", fields: [createdById], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  auditLogs SalesTargetAudit[]
+
+  @@unique([userId, targetType, periodType, periodStart])
+  @@index([userId])
+}
+
+/// Records who changed what on a SalesTarget and when, per the "target changes are
+/// audited" requirement — scoped to targets only, not a general system-wide audit log.
+model SalesTargetAudit {
+  id            String      @id @default(cuid())
+  targetId      String
+  target        SalesTarget @relation(fields: [targetId], references: [id], onDelete: Cascade)
+  actorId       String
+  actor         User        @relation("TargetAuditActor", fields: [actorId], references: [id])
+  action        String // CREATED | UPDATED | STATUS_CHANGED
+  field         String? // which field changed on an UPDATED/STATUS_CHANGED entry
+  previousValue String?
+  newValue      String?
+  createdAt     DateTime    @default(now())
+
+  @@index([targetId])
+}
