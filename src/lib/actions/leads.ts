@@ -99,16 +99,20 @@ export async function updateLead(id: string, _prev: ActionState, formData: FormD
   redirect(`/leads/${id}?flash=${encodeURIComponent(translateMessage(dict, "Lead updated"))}`);
 }
 
-export async function deleteLead(id: string): Promise<void> {
+export async function deleteLead(id: string, _prev: ActionState, _formData: FormData): Promise<ActionState> {
   const user = await requireActionUser();
   const dict = await getServerDict();
   const existing = await prisma.lead.findUnique({ where: { id } });
-  if (!existing) return;
+  if (!existing) return null;
   if (!(await canAccessOwner(user, existing.ownerId))) {
-    throw new Error(translateMessage(dict, "You do not have permission to delete this lead"));
+    return { error: translateMessage(dict, "You do not have permission to delete this lead") };
   }
 
-  await prisma.lead.delete({ where: { id } });
+  try {
+    await prisma.lead.delete({ where: { id } });
+  } catch {
+    return { error: translateMessage(dict, "This record is still linked to other data and can't be deleted") };
+  }
   revalidatePath("/leads");
   redirect("/leads");
 }
@@ -118,16 +122,16 @@ export async function deleteLead(id: string): Promise<void> {
  * Reuses an existing Company (exact name match) or Contact (exact email match)
  * instead of creating duplicates, and keeps the Lead row for history.
  */
-export async function convertLead(id: string): Promise<void> {
+export async function convertLead(id: string, _prev: ActionState, _formData: FormData): Promise<ActionState> {
   const user = await requireActionUser();
   const dict = await getServerDict();
   const lead = await prisma.lead.findUnique({ where: { id } });
-  if (!lead) throw new Error(translateMessage(dict, "Lead not found"));
+  if (!lead) return { error: translateMessage(dict, "Lead not found") };
   if (!(await canAccessOwner(user, lead.ownerId))) {
-    throw new Error(translateMessage(dict, "You do not have permission to convert this lead"));
+    return { error: translateMessage(dict, "You do not have permission to convert this lead") };
   }
   if (lead.status === "CONVERTED") {
-    throw new Error(translateMessage(dict, "This lead has already been converted"));
+    return { error: translateMessage(dict, "This lead has already been converted") };
   }
 
   const ownerId = resolveOwnerId(user, lead.ownerId);

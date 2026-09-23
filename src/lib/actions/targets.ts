@@ -137,16 +137,16 @@ export async function updateTarget(id: string, _prev: ActionState, formData: For
 }
 
 /** Only ADMIN may change a target's status (e.g. archiving it) — never the Account Manager it belongs to. */
-export async function setTargetStatus(id: string, formData: FormData): Promise<void> {
+export async function setTargetStatus(id: string, _prev: ActionState, formData: FormData): Promise<ActionState> {
   const admin = await requireActionUser("ADMIN");
   const dict = await getServerDict();
 
   const existing = await prisma.salesTarget.findUnique({ where: { id } });
-  if (!existing) throw new Error(translateMessage(dict, "Target not found"));
+  if (!existing) return { error: translateMessage(dict, "Target not found") };
 
   const parsed = targetStatusSchema.safeParse({ status: String(formData.get("status") ?? "") });
   if (!parsed.success) {
-    throw new Error(translateMessage(dict, parsed.error.issues[0]?.message ?? "Invalid data"));
+    return { error: translateMessage(dict, parsed.error.issues[0]?.message ?? "Invalid data") };
   }
 
   await prisma.salesTarget.update({ where: { id }, data: { status: parsed.data.status } });
@@ -165,18 +165,20 @@ export async function setTargetStatus(id: string, formData: FormData): Promise<v
 
   revalidatePath("/targets");
   revalidatePath("/");
+  return null;
 }
 
 /** Only ADMIN may permanently delete a target — its audit trail is deleted along with it (cascade). */
-export async function deleteTarget(id: string): Promise<void> {
+export async function deleteTarget(id: string, _prev: ActionState, _formData: FormData): Promise<ActionState> {
   await requireActionUser("ADMIN");
   const dict = await getServerDict();
 
   const existing = await prisma.salesTarget.findUnique({ where: { id } });
-  if (!existing) throw new Error(translateMessage(dict, "Target not found"));
+  if (!existing) return { error: translateMessage(dict, "Target not found") };
 
   await prisma.salesTarget.delete({ where: { id } });
 
   revalidatePath("/targets");
   revalidatePath("/");
+  return null;
 }

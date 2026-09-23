@@ -9,6 +9,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { UserForm } from "@/components/users/user-form";
 import { type Role } from "@/lib/validations";
 import { createUser, updateUser, toggleUserActive } from "@/lib/actions/users";
+import { ServerActionForm } from "@/components/server-action-form";
 import { getLocale } from "@/i18n/locale";
 import { getDictionary } from "@/i18n/dictionaries";
 import { roleLabel } from "@/i18n/enum-labels";
@@ -83,7 +84,7 @@ export default async function UsersPage({
                   <td className="px-4 py-3 text-muted">{u._count.contacts}</td>
                   <td className="px-4 py-3 text-muted">{u._count.opportunities}</td>
                   <td className="px-4 py-3">
-                    <form action={toggleUserActive.bind(null, u.id, !u.active)}>
+                    <ServerActionForm action={toggleUserActive.bind(null, u.id, !u.active)}>
                       <button
                         type="submit"
                         className="cursor-pointer rounded-full transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
@@ -92,7 +93,7 @@ export default async function UsersPage({
                           {u.active ? dict.users.active : dict.users.disabled}
                         </Badge>
                       </button>
-                    </form>
+                    </ServerActionForm>
                   </td>
                   <td className="px-4 py-3">
                     <ModalFormTrigger

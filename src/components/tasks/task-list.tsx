@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ModalFormTrigger } from "@/components/ui/modal-form-trigger";
 import { ConfirmDeleteForm } from "@/components/confirm-delete-form";
+import { ServerActionForm } from "@/components/server-action-form";
 import { TaskForm } from "@/components/tasks/task-form";
 import { toggleTaskDone, updateTask, deleteTask } from "@/lib/actions/tasks";
 import { type TaskPriority, type TaskType } from "@/lib/validations";
@@ -64,7 +65,7 @@ export function TaskList({
             key={task.id}
             className="flex flex-wrap items-center gap-3 rounded-lg border border-border px-3 py-2.5"
           >
-            <form action={toggleTaskDone.bind(null, task.id, !task.done)}>
+            <ServerActionForm action={toggleTaskDone.bind(null, task.id, !task.done)}>
               <button
                 type="submit"
                 disabled={!canManage}
@@ -76,7 +77,7 @@ export function TaskList({
               >
                 {task.done ? "✓" : ""}
               </button>
-            </form>
+            </ServerActionForm>
 
             <span
               className="flex size-7 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary"

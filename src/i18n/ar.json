@@ -797,6 +797,7 @@
     "System stages can't be renamed": "لا يمكن إعادة تسمية المراحل الأساسية",
     "System stages can't be deleted": "لا يمكن حذف المراحل الأساسية",
     "This stage is used by existing opportunities and can't be deleted": "هذه المرحلة مستخدمة في فرص موجودة ولا يمكن حذفها",
+    "This record is still linked to other data and can't be deleted": "هذا السجل مرتبط ببيانات أخرى ولا يمكن حذفه",
     "Task not found": "المهمة غير موجودة",
     "You do not have permission to edit this task": "ليست لديك صلاحية تعديل هذه المهمة",
     "You do not have permission to delete this task": "ليست لديك صلاحية حذف هذه المهمة",

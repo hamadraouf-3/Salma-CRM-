@@ -209,16 +209,20 @@ export async function updateOpportunityStage(
   return {};
 }
 
-export async function deleteOpportunity(id: string): Promise<void> {
+export async function deleteOpportunity(id: string, _prev: ActionState, _formData: FormData): Promise<ActionState> {
   const user = await requireActionUser();
   const dict = await getServerDict();
   const existing = await prisma.opportunity.findUnique({ where: { id } });
-  if (!existing) return;
+  if (!existing) return null;
   if (!(await canAccessOwner(user, existing.ownerId))) {
-    throw new Error(translateMessage(dict, "You do not have permission to delete this opportunity"));
+    return { error: translateMessage(dict, "You do not have permission to delete this opportunity") };
   }
 
-  await prisma.opportunity.delete({ where: { id } });
+  try {
+    await prisma.opportunity.delete({ where: { id } });
+  } catch {
+    return { error: translateMessage(dict, "This record is still linked to other data and can't be deleted") };
+  }
   revalidatePath("/opportunities");
   redirect("/opportunities");
 }

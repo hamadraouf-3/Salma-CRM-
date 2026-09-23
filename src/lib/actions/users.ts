@@ -88,12 +88,18 @@ export async function updateUser(
   redirect(`/users?flash=${encodeURIComponent(translateMessage(dict, "User updated"))}`);
 }
 
-export async function toggleUserActive(id: string, active: boolean): Promise<void> {
+export async function toggleUserActive(
+  id: string,
+  active: boolean,
+  _prev: ActionState,
+  _formData: FormData
+): Promise<ActionState> {
   const admin = await requireActionUser("ADMIN");
   if (admin.id === id && !active) {
     const dict = await getServerDict();
-    throw new Error(translateMessage(dict, "You cannot deactivate your own account"));
+    return { error: translateMessage(dict, "You cannot deactivate your own account") };
   }
   await prisma.user.update({ where: { id }, data: { active } });
   revalidatePath("/users");
+  return null;
 }

@@ -106,16 +106,20 @@ export async function updateCompany(
   redirect(`/companies/${id}?flash=${encodeURIComponent(translateMessage(dict, "Company updated"))}`);
 }
 
-export async function deleteCompany(id: string): Promise<void> {
+export async function deleteCompany(id: string, _prev: ActionState, _formData: FormData): Promise<ActionState> {
   const user = await requireActionUser();
   const dict = await getServerDict();
   const existing = await prisma.company.findUnique({ where: { id } });
-  if (!existing) return;
+  if (!existing) return null;
   if (!(await canAccessOwner(user, existing.ownerId))) {
-    throw new Error(translateMessage(dict, "You do not have permission to delete this company"));
+    return { error: translateMessage(dict, "You do not have permission to delete this company") };
   }
 
-  await prisma.company.delete({ where: { id } });
+  try {
+    await prisma.company.delete({ where: { id } });
+  } catch {
+    return { error: translateMessage(dict, "This record is still linked to other data and can't be deleted") };
+  }
   revalidatePath("/companies");
   redirect("/companies");
 }

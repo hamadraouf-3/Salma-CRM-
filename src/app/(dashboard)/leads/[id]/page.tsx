@@ -8,6 +8,7 @@ import { Card, CardHeader, CardBody } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button, LinkButton } from "@/components/ui/button";
 import { ConfirmDeleteForm } from "@/components/confirm-delete-form";
+import { ServerActionForm } from "@/components/server-action-form";
 import { ActivityTimeline } from "@/components/activity-timeline";
 import { ModalFormTrigger } from "@/components/ui/modal-form-trigger";
 import { LeadForm } from "@/components/leads/lead-form";
@@ -70,12 +71,12 @@ export default async function LeadDetailPage({
         </div>
         <div className="flex items-center gap-2">
           {canConvert ? (
-            <form action={convertLead.bind(null, lead.id)}>
+            <ServerActionForm action={convertLead.bind(null, lead.id)}>
               <Button type="submit">
                 <ArrowRightCircle className="size-4" />
                 {dict.leads.convert}
               </Button>
-            </form>
+            </ServerActionForm>
           ) : null}
           {canEdit && !isConverted ? (
             <>
@@ -180,7 +181,7 @@ export default async function LeadDetailPage({
             />
             <CardBody className="space-y-2">
               {lead.tasks.map((task) => (
-                <form
+                <ServerActionForm
                   key={task.id}
                   action={toggleTaskDone.bind(null, task.id, !task.done)}
                   className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm"
@@ -197,7 +198,7 @@ export default async function LeadDetailPage({
                   </button>
                   <span className={cn("flex-1", task.done && "text-muted line-through")}>{task.title}</span>
                   {task.dueDate ? <span className="text-xs text-muted">{formatDate(task.dueDate)}</span> : null}
-                </form>
+                </ServerActionForm>
               ))}
               {lead.tasks.length === 0 ? (
                 <p className="py-4 text-center text-sm text-muted">{dict.leads.noTasksLinked}</p>

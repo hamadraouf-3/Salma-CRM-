@@ -9,7 +9,7 @@ how the sales lifecycle and roles fit together (including what's intentionally n
 ## Tech stack
 
 - Next.js 16 (App Router) + TypeScript + Tailwind CSS
-- Prisma ORM 7 + PostgreSQL
+- Prisma ORM 7 + SQLite (local database)
 - NextAuth v4 (email/password sign-in with role-based permissions)
 - Recharts for dashboards and reports
 
@@ -91,14 +91,10 @@ how the sales lifecycle and roles fit together (including what's intentionally n
 
 ## Getting started
 
-Needs a PostgreSQL database — a free one from [Neon](https://neon.tech) or [Supabase](https://supabase.com)
-works fine, or a local Postgres install.
-
 ```bash
 npm install
-cp .env.example .env                   # then fill in DATABASE_URL and NEXTAUTH_SECRET
-npx prisma migrate dev                 # create the schema (first time only)
-npx prisma db seed                     # create the initial admin account
+npx prisma migrate dev   # create the database (first time only)
+npx prisma db seed       # create the initial admin account
 npm run dev
 ```
 
@@ -133,16 +129,3 @@ npm run build                          # production build
 ## Environment variables
 
 Copy `.env.example` to `.env` and fill in the values (especially `NEXTAUTH_SECRET` in production).
-
-## Deploying to Vercel
-
-1. Push this repo to GitHub, then import it in Vercel.
-2. Create a Postgres database — Vercel's own Storage tab (Neon-powered) works, or paste in a connection
-   string from Neon/Supabase directly — and set it as the `DATABASE_URL` environment variable.
-3. Set `NEXTAUTH_SECRET` (generate one with `openssl rand -base64 32`) and `NEXTAUTH_URL` (your Vercel
-   deployment URL, e.g. `https://your-app.vercel.app`) as environment variables too.
-4. Deploy. The build command (`prisma migrate deploy && next build`, see `package.json`) applies the
-   schema to that database automatically on every deploy — no manual migration step needed.
-5. Run `npx prisma db seed` once against the production `DATABASE_URL` (locally, with `.env` pointed at
-   it, or via `vercel env pull` first) to create the initial admin account, then sign in and create real
-   accounts for everyone from the "Users" page.

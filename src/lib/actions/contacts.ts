@@ -144,16 +144,20 @@ export async function updateContact(
   redirect(`/contacts/${id}?flash=${encodeURIComponent(translateMessage(dict, "Contact updated"))}`);
 }
 
-export async function deleteContact(id: string): Promise<void> {
+export async function deleteContact(id: string, _prev: ActionState, _formData: FormData): Promise<ActionState> {
   const user = await requireActionUser();
   const dict = await getServerDict();
   const existing = await prisma.contact.findUnique({ where: { id } });
-  if (!existing) return;
+  if (!existing) return null;
   if (!(await canAccessOwner(user, existing.ownerId))) {
-    throw new Error(translateMessage(dict, "You do not have permission to delete this contact"));
+    return { error: translateMessage(dict, "You do not have permission to delete this contact") };
   }
 
-  await prisma.contact.delete({ where: { id } });
+  try {
+    await prisma.contact.delete({ where: { id } });
+  } catch {
+    return { error: translateMessage(dict, "This record is still linked to other data and can't be deleted") };
+  }
   revalidatePath("/contacts");
   redirect("/contacts");
 }

@@ -2,8 +2,6 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
 import { WRITE_ROLES, type Role } from "@/lib/validations";
-import { getServerDict } from "@/i18n/server-dict";
-import { translateMessage } from "@/i18n/messages";
 
 export async function getCurrentUser() {
   const session = await getServerSession(authOptions);
@@ -36,12 +34,8 @@ export async function requireRole(...roles: Role[]) {
  */
 export async function requireActionUser(...roles: Role[]) {
   const user = await getCurrentUser();
-  if (!user) {
-    throw new Error(translateMessage(await getServerDict(), "You are not signed in"));
-  }
+  if (!user) redirect("/login");
   const allowed = roles.length > 0 ? roles : WRITE_ROLES;
-  if (!allowed.includes(user.role)) {
-    throw new Error(translateMessage(await getServerDict(), "You do not have permission to perform this action"));
-  }
+  if (!allowed.includes(user.role)) redirect("/");
   return user;
 }

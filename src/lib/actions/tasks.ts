@@ -109,13 +109,18 @@ export async function updateTask(
   redirect(`/tasks?flash=${encodeURIComponent(translateMessage(dict, "Task updated"))}`);
 }
 
-export async function toggleTaskDone(id: string, done: boolean): Promise<void> {
+export async function toggleTaskDone(
+  id: string,
+  done: boolean,
+  _prev: ActionState,
+  _formData: FormData
+): Promise<ActionState> {
   const user = await requireActionUser();
   const dict = await getServerDict();
   const existing = await prisma.task.findUnique({ where: { id } });
-  if (!existing) throw new Error(translateMessage(dict, "Task not found"));
+  if (!existing) return { error: translateMessage(dict, "Task not found") };
   if (!(await canAccessOwner(user, existing.assigneeId))) {
-    throw new Error(translateMessage(dict, "You do not have permission to edit this task"));
+    return { error: translateMessage(dict, "You do not have permission to edit this task") };
   }
 
   await prisma.task.update({ where: { id }, data: { done } });
@@ -124,17 +129,19 @@ export async function toggleTaskDone(id: string, done: boolean): Promise<void> {
   if (existing.contactId) revalidatePath(`/contacts/${existing.contactId}`);
   if (existing.companyId) revalidatePath(`/companies/${existing.companyId}`);
   if (existing.leadId) revalidatePath(`/leads/${existing.leadId}`);
+  return null;
 }
 
-export async function deleteTask(id: string): Promise<void> {
+export async function deleteTask(id: string, _prev: ActionState, _formData: FormData): Promise<ActionState> {
   const user = await requireActionUser();
   const dict = await getServerDict();
   const existing = await prisma.task.findUnique({ where: { id } });
-  if (!existing) return;
+  if (!existing) return null;
   if (!(await canAccessOwner(user, existing.assigneeId))) {
-    throw new Error(translateMessage(dict, "You do not have permission to delete this task"));
+    return { error: translateMessage(dict, "You do not have permission to delete this task") };
   }
 
   await prisma.task.delete({ where: { id } });
   revalidatePath("/tasks");
+  return null;
 }

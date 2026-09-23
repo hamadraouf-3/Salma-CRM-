@@ -1,5 +1,5 @@
 // Prisma schema for the Sales CRM
-// PostgreSQL datasource — see prisma.config.ts for the connection URL
+// SQLite datasource — see prisma.config.ts for the connection URL
 
 generator client {
   provider     = "prisma-client"
@@ -8,12 +8,11 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
 }
 
-// Role/status/stage fields below are kept as plain strings rather than native Postgres enums —
-// this project started on SQLite (no native enum type) and stayed with app-level validation
-// (src/lib/validations.ts) after moving to Postgres, so adding a new value never needs a migration.
+// SQLite has no native enum type, so role/status/stage fields below are
+// plain strings. The allowed values are enforced in src/lib/validations.ts.
 
 model User {
   id           String   @id @default(cuid())

@@ -7,6 +7,7 @@ import { ProgressBar } from "@/components/ui/progress-bar";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ModalFormTrigger } from "@/components/ui/modal-form-trigger";
 import { ConfirmDeleteForm } from "@/components/confirm-delete-form";
+import { ServerActionForm } from "@/components/server-action-form";
 import { TargetForm } from "@/components/targets/target-form";
 import { setTargetStatus, updateTarget, deleteTarget } from "@/lib/actions/targets";
 import { useDict } from "@/i18n/locale-context";
@@ -126,7 +127,7 @@ export function TargetsTable({
                       />
                     </ModalFormTrigger>
                     {row.status === "ARCHIVED" ? (
-                      <form action={setTargetStatus.bind(null, row.id)}>
+                      <ServerActionForm action={setTargetStatus.bind(null, row.id)}>
                         <input type="hidden" name="status" value="ACTIVE" />
                         <button
                           type="submit"
@@ -135,9 +136,9 @@ export function TargetsTable({
                           <RotateCcw className="size-3.5" />
                           {dict.targets.activate}
                         </button>
-                      </form>
+                      </ServerActionForm>
                     ) : (
-                      <form action={setTargetStatus.bind(null, row.id)}>
+                      <ServerActionForm action={setTargetStatus.bind(null, row.id)}>
                         <input type="hidden" name="status" value="ARCHIVED" />
                         <button
                           type="submit"
@@ -146,7 +147,7 @@ export function TargetsTable({
                           <Archive className="size-3.5" />
                           {dict.targets.archive}
                         </button>
-                      </form>
+                      </ServerActionForm>
                     )}
                     <ConfirmDeleteForm
                       action={deleteTarget.bind(null, row.id)}

@@ -773,6 +773,7 @@
     "System stages can't be renamed": "System stages can't be renamed",
     "System stages can't be deleted": "System stages can't be deleted",
     "This stage is used by existing opportunities and can't be deleted": "This stage is used by existing opportunities and can't be deleted",
+    "This record is still linked to other data and can't be deleted": "This record is still linked to other data and can't be deleted",
     "Task not found": "Task not found",
     "You do not have permission to edit this task": "You do not have permission to edit this task",
     "You do not have permission to delete this task": "You do not have permission to delete this task",

@@ -76,30 +76,35 @@ export async function updatePipelineStage(id: string, _prev: ActionState, formDa
   return null;
 }
 
-export async function deletePipelineStage(id: string): Promise<void> {
+export async function deletePipelineStage(
+  id: string,
+  _prev: ActionState,
+  _formData: FormData
+): Promise<ActionState> {
   const user = await requireActionUser();
   const dict = await getServerDict();
 
   const existing = await prisma.pipelineStage.findUnique({ where: { id } });
-  if (!existing) return;
-  if (existing.isSystem) throw new Error(translateMessage(dict, "System stages can't be deleted"));
+  if (!existing) return null;
+  if (existing.isSystem) return { error: translateMessage(dict, "System stages can't be deleted") };
 
   const opportunity = existing.opportunityId
     ? await prisma.opportunity.findUnique({ where: { id: existing.opportunityId } })
     : null;
   if (!opportunity || !(await canAccessOwner(user, opportunity.ownerId))) {
-    throw new Error(translateMessage(dict, "You do not have permission to edit this opportunity"));
+    return { error: translateMessage(dict, "You do not have permission to edit this opportunity") };
   }
 
   const inUse = await prisma.opportunity.count({ where: { stage: id } });
   if (inUse > 0) {
-    throw new Error(translateMessage(dict, "This stage is used by existing opportunities and can't be deleted"));
+    return { error: translateMessage(dict, "This stage is used by existing opportunities and can't be deleted") };
   }
 
   await prisma.pipelineStage.delete({ where: { id } });
 
   revalidatePath("/opportunities");
   revalidatePath(`/opportunities/${existing.opportunityId}`);
+  return null;
 }
 
 export async function movePipelineStage(id: string, direction: "up" | "down"): Promise<void> {
