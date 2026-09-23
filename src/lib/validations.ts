@@ -109,20 +109,19 @@ export const SYSTEM_STAGE_DEFAULT_PROBABILITY: Record<(typeof SYSTEM_STAGE_KEYS)
 export type StageGateFailure = { stage: OpportunityStage; missing: "value" | "nextAction" };
 
 /**
- * Returns which requirement `stage` is missing (a value, or a next action), or null if the
- * stage isn't gated or both are already set. Any stage other than the fixed NEW/WON/LOST system
- * stages is gated — i.e. every admin-added stage in between requires a value and a next action before
- * an opportunity can enter it, keeping the pipeline meaningful. Locale-agnostic on purpose — turning
- * this into a displayable message (via `stageGateMessage` in `src/i18n/messages.ts`) is the caller's
- * job, so this file doesn't need to depend on the i18n dictionaries.
+ * Returns which requirement `stage` is missing, or null if the stage isn't gated or the
+ * requirement is already set. Any stage other than the fixed NEW/WON/LOST system stages needs a
+ * next action before an opportunity can enter it. Estimated value is optional and never blocks a
+ * move. Locale-agnostic on purpose — turning this into a displayable message (via `stageGateMessage`
+ * in `src/i18n/messages.ts`) is the caller's job, so this file doesn't need to depend on the i18n
+ * dictionaries.
  */
 export function stageGateCheck(
   stage: string,
-  value: number,
+  _value: number,
   nextAction: string | null | undefined
 ): StageGateFailure | null {
   if (isSystemStage(stage)) return null;
-  if (!value || value <= 0) return { stage, missing: "value" };
   if (!nextAction || !nextAction.trim()) return { stage, missing: "nextAction" };
   return null;
 }
