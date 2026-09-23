@@ -244,7 +244,7 @@ export function SalesOpportunityForm({
             <Input
               id="companyName"
               name="companyName"
-              list="company-options"
+              autoComplete="off"
               value={companyName}
               onChange={(e) => {
                 setCompanyName(e.target.value);
@@ -252,11 +252,6 @@ export function SalesOpportunityForm({
               }}
               placeholder={dict.sales.companyNamePlaceholder}
             />
-            <datalist id="company-options">
-              {companies.map((c) => (
-                <option key={c.id} value={c.name} />
-              ))}
-            </datalist>
           </div>
 
           {companyMatch ? (
@@ -338,7 +333,7 @@ export function SalesOpportunityForm({
             <Input
               id="contactName"
               name="contactName"
-              list="contact-options"
+              autoComplete="off"
               value={contactName}
               onChange={(e) => {
                 setContactName(e.target.value);
@@ -346,11 +341,6 @@ export function SalesOpportunityForm({
               }}
               placeholder={dict.sales.contactNamePlaceholder}
             />
-            <datalist id="contact-options">
-              {contactsForCompany.map((c) => (
-                <option key={c.id} value={c.name} />
-              ))}
-            </datalist>
           </div>
 
           {contactMatch ? (
