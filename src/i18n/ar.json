@@ -741,17 +741,7 @@
     "emailAddress": "عنوان البريد الإلكتروني",
     "password": "كلمة المرور",
     "signingIn": "جارٍ تسجيل الدخول...",
-    "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
-    "noAccount": "ما عندك حساب؟",
-    "signUp": "إنشاء حساب"
-  },
-  "signup": {
-    "title": "إنشاء حساب",
-    "name": "الاسم",
-    "confirmPassword": "تأكيد كلمة المرور",
-    "submit": "إنشاء الحساب",
-    "submitting": "جارٍ إنشاء الحساب...",
-    "haveAccount": "عندك حساب؟"
+    "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة"
   },
   "messages": {
     "Company name is required": "اسم الشركة مطلوب",

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Input, Field } from "@/components/ui/input";
@@ -50,12 +49,6 @@ export function LoginForm({ callbackUrl }: { callbackUrl: string }) {
       <Button type="submit" className="mt-2 h-12 w-full" disabled={isPending}>
         {isPending ? dict.login.signingIn : dict.login.signIn}
       </Button>
-      <p className="text-center text-sm text-muted">
-        {dict.login.noAccount}{" "}
-        <Link href="/signup" className="font-medium text-primary hover:underline">
-          {dict.login.signUp}
-        </Link>
-      </p>
     </form>
   );
 }

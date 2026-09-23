@@ -717,17 +717,7 @@
     "emailAddress": "Email address",
     "password": "Password",
     "signingIn": "Signing in...",
-    "invalidCredentials": "Invalid email or password",
-    "noAccount": "Don't have an account?",
-    "signUp": "Create an account"
-  },
-  "signup": {
-    "title": "Create an account",
-    "name": "Name",
-    "confirmPassword": "Confirm password",
-    "submit": "Create account",
-    "submitting": "Creating account...",
-    "haveAccount": "Already have an account?"
+    "invalidCredentials": "Invalid email or password"
   },
   "messages": {
     "Company name is required": "Company name is required",
