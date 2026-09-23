@@ -82,11 +82,16 @@ export function OpportunityBoard({
       )
     );
 
+    setError(null);
     startTransition(async () => {
       try {
-        await updateOpportunityStage(opportunityId, stage, gateFix);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : dict.opportunities.couldNotUpdateStage);
+        const result = await updateOpportunityStage(opportunityId, stage, gateFix);
+        if (result?.error) {
+          setError(result.error);
+          setOpportunities((prev) => prev.map((o) => (o.id === opportunityId ? { ...o, ...previous } : o)));
+        }
+      } catch {
+        setError(dict.opportunities.couldNotUpdateStage);
         setOpportunities((prev) => prev.map((o) => (o.id === opportunityId ? { ...o, ...previous } : o)));
       }
     });

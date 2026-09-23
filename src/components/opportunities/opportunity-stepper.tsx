@@ -79,22 +79,43 @@ export function OpportunityStepper({
 }) {
   const dict = useDict();
   const ordered = [...stages].sort((a, b) => a.order - b.order);
-  const [pendingFix, setPendingFix] = useState<{ stageId: string; missing: StageGateFailure["missing"] } | null>(null);
+  const [pendingFix, setPendingFix] = useState<{
+    stageId: string;
+    missing: StageGateFailure["missing"];
+    draft: { value?: number; nextAction?: string };
+  } | null>(null);
 
   function handleClick(stageId: string) {
     if (stageId === currentStage) return;
     const gateFailure = stageGateCheck(stageId, currentValue, currentNextAction);
     if (gateFailure) {
-      setPendingFix({ stageId, missing: gateFailure.missing });
+      setPendingFix({ stageId, missing: gateFailure.missing, draft: {} });
       return;
     }
     setPendingFix(null);
     onMoveStage(stageId);
   }
 
-  function handleSubmitFix(stageId: string, missing: StageGateFailure["missing"], raw: string) {
+  function handleSubmitFix(raw: string) {
+    if (!pendingFix) return;
+    const draft = {
+      ...pendingFix.draft,
+      ...(pendingFix.missing === "value" ? { value: Number(raw) } : { nextAction: raw.trim() }),
+    };
+    const stillMissing = stageGateCheck(
+      pendingFix.stageId,
+      draft.value ?? currentValue,
+      draft.nextAction ?? currentNextAction
+    );
+    if (stillMissing) {
+      setPendingFix({ stageId: pendingFix.stageId, missing: stillMissing.missing, draft });
+      return;
+    }
+    const gateFix: { value?: number; nextAction?: string } = {};
+    if (draft.value != null) gateFix.value = draft.value;
+    if (draft.nextAction != null) gateFix.nextAction = draft.nextAction;
     setPendingFix(null);
-    onMoveStage(stageId, missing === "value" ? { value: Number(raw) } : { nextAction: raw });
+    onMoveStage(pendingFix.stageId, Object.keys(gateFix).length > 0 ? gateFix : undefined);
   }
 
   const currentIndex = ordered.findIndex((s) => s.id === currentStage);
@@ -139,9 +160,10 @@ export function OpportunityStepper({
       </div>
       {pendingFix ? (
         <GateFixForm
+          key={pendingFix.missing}
           missing={pendingFix.missing}
           dict={dict}
-          onSubmit={(raw) => handleSubmitFix(pendingFix.stageId, pendingFix.missing, raw)}
+          onSubmit={handleSubmitFix}
         />
       ) : null}
     </div>

@@ -163,23 +163,25 @@ export async function updateOpportunityStage(
   /** Lets the board's Workflow popup supply the missing value/next action right when a gated move needs
    * one, instead of sending the user away to the Opportunity's own edit form and back. */
   gateFix?: { value?: number; nextAction?: string }
-): Promise<void> {
+): Promise<{ error?: string }> {
   const user = await requireActionUser();
   const dict = await getServerDict();
   const existing = await prisma.opportunity.findUnique({ where: { id } });
-  if (!existing) throw new Error(translateMessage(dict, "Opportunity not found"));
+  if (!existing) return { error: translateMessage(dict, "Opportunity not found") };
   if (!(await canAccessOwner(user, existing.ownerId))) {
-    throw new Error(translateMessage(dict, "You do not have permission to edit this opportunity"));
+    return { error: translateMessage(dict, "You do not have permission to edit this opportunity") };
   }
   const newStage = await prisma.pipelineStage.findUnique({ where: { id: stage } });
   if (!newStage || (newStage.opportunityId !== null && newStage.opportunityId !== id)) {
-    throw new Error(translateMessage(dict, "Invalid stage"));
+    return { error: translateMessage(dict, "Invalid stage") };
   }
 
   const value = gateFix?.value ?? existing.value;
   const nextAction = gateFix?.nextAction ?? existing.nextAction;
   const gateFailure = stageGateCheck(stage, value, nextAction);
-  if (gateFailure) throw new Error(stageGateMessage(dict, gateFailure, newStage.label));
+  // Return the reason instead of throwing. A thrown Server Action is redacted in production and the
+  // board only shows "Minified React error #441".
+  if (gateFailure) return { error: stageGateMessage(dict, gateFailure, newStage.label) };
 
   await prisma.opportunity.update({
     where: { id },
@@ -204,6 +206,7 @@ export async function updateOpportunityStage(
 
   revalidatePath("/opportunities");
   revalidatePath(`/opportunities/${id}`);
+  return {};
 }
 
 export async function deleteOpportunity(id: string): Promise<void> {
