@@ -13,6 +13,7 @@ import {
 } from "@/lib/validations";
 import { getServerDict } from "@/i18n/server-dict";
 import { translateMessage, stageGateMessage } from "@/i18n/messages";
+import { ensureSystemStages } from "@/lib/pipeline-stages";
 
 export type ActionState = { error?: string } | null;
 
@@ -46,6 +47,7 @@ export async function createOpportunity(_prev: ActionState, formData: FormData):
 
   // Only the shared system stages (NEW/WON/LOST) exist before the Opportunity does — a custom workflow
   // step can only be added afterward, from the Opportunity's own detail page.
+  await ensureSystemStages();
   const stageRow = await prisma.pipelineStage.findUnique({ where: { id: data.stage } });
   if (!stageRow || stageRow.opportunityId !== null) {
     return { error: translateMessage(dict, "Invalid stage") };

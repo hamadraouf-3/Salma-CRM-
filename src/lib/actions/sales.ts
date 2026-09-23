@@ -7,6 +7,7 @@ import { resolveOwnerId, resolveVisibility, canAccessOwner, ownedScope } from "@
 import { companySchema, contactSchema, opportunitySchema, requirementSchema, stageGateCheck } from "@/lib/validations";
 import { getServerDict } from "@/i18n/server-dict";
 import { translateMessage, stageGateMessage } from "@/i18n/messages";
+import { ensureSystemStages } from "@/lib/pipeline-stages";
 
 export type ActionState = { error?: string } | null;
 
@@ -171,6 +172,7 @@ export async function createSalesOpportunity(_prev: ActionState, formData: FormD
   }
   const opp = parsedOpportunity.data;
 
+  await ensureSystemStages();
   const stageRow = await prisma.pipelineStage.findUnique({ where: { id: opp.stage } });
   if (!stageRow || stageRow.opportunityId !== null) {
     return { error: translateMessage(dict, "Invalid stage") };
