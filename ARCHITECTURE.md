@@ -7,8 +7,9 @@
   typed function called directly from a form or client component — no request/response schema layer to
   keep in sync, no API versioning surface. A handful of Route Handlers exist only where a raw HTTP
   response is required (CSV export, NextAuth's callback routes).
-- **Database**: SQLite via Prisma ORM 7 (`prisma-client` generator + `@prisma/adapter-better-sqlite3`
-  driver adapter). Single file (`prisma/dev.db`), zero external services to provision or host.
+- **Database**: PostgreSQL via Prisma ORM 7 (`prisma-client` generator + `@prisma/adapter-pg` driver
+  adapter). Started on SQLite for local-only development, moved to Postgres to deploy for real use — see
+  "Migration history of note" in `DATABASE.md`.
 - **Auth**: NextAuth v4, credentials provider, JWT sessions, bcrypt password hashing.
 - **UI**: Tailwind CSS v4 with logical properties (`ps-`, `text-start`, …) so the layout mirrors
   automatically under `dir="rtl"`, a small custom component kit (`Card`, `Button`, `Badge`, `Input`),
@@ -37,7 +38,7 @@ src/lib/
   └─ prisma.ts    — PrismaClient singleton (cached on globalThis in dev to survive HMR)
   │
   ▼
-prisma/schema.prisma → SQLite (prisma/dev.db)
+prisma/schema.prisma → PostgreSQL
 ```
 
 ## RBAC and data visibility
@@ -348,9 +349,9 @@ top-border stripe, a leaderboard rank badge) — those get their own light/dark 
 
 Documented here so it's a visible decision, not an oversight:
 
-- **PostgreSQL / Redis / object storage** — the project intentionally stays on SQLite with local-disk
-  storage for the current single-instance deployment. The schema has no Postgres-specific assumptions,
-  so migrating later is a Prisma provider change plus a data migration, not a rewrite.
+- **Redis / object storage** — the database moved from SQLite to PostgreSQL to support a real deployment
+  (see `DATABASE.md`), but there's still no cache layer or file storage; nothing in the current feature
+  set needs either yet.
 - **A public REST API** (`/api/v1/...`) — not built, since nothing external consumes this app yet. If a
   future integration needs one, it would sit as a thin layer calling the same `src/lib/actions/*`
   functions, reusing all the authorization logic described above.
