@@ -93,7 +93,11 @@ export function TargetsTable({
                 </div>
               </td>
               <td className="px-4 py-3">
-                <Badge tone={statusTone[row.status] ?? "default"}>{targetStatusLabel(dict, row.status)}</Badge>
+                {row.achievementPct >= 100 && row.status !== "ARCHIVED" ? (
+                  <Badge tone="success">{dict.targets.targetAchieved}</Badge>
+                ) : (
+                  <Badge tone={statusTone[row.status] ?? "default"}>{targetStatusLabel(dict, row.status)}</Badge>
+                )}
               </td>
               {canManage ? (
                 <td className="px-4 py-3">
