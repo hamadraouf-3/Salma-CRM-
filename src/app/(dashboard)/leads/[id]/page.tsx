@@ -79,26 +79,26 @@ export default async function LeadDetailPage({
             </ServerActionForm>
           ) : null}
           {canEdit && !isConverted ? (
-            <>
-              <ModalFormTrigger
-                title={dict.leads.editTitle}
-                trigger={
-                  <Button variant="secondary">
-                    <Pencil className="size-4" />
-                    {dict.common.edit}
-                  </Button>
-                }
-              >
-                <LeadForm
-                  action={updateLead.bind(null, lead.id)}
-                  currentUser={user}
-                  owners={owners}
-                  defaultValues={lead}
-                  submitLabel={dict.common.saveChanges}
-                />
-              </ModalFormTrigger>
-              <ConfirmDeleteForm action={deleteLead.bind(null, lead.id)} confirmMessage={dict.leads.deleteConfirm} label={dict.common.delete} />
-            </>
+            <ModalFormTrigger
+              title={dict.leads.editTitle}
+              trigger={
+                <Button variant="secondary">
+                  <Pencil className="size-4" />
+                  {dict.common.edit}
+                </Button>
+              }
+            >
+              <LeadForm
+                action={updateLead.bind(null, lead.id)}
+                currentUser={user}
+                owners={owners}
+                defaultValues={lead}
+                submitLabel={dict.common.saveChanges}
+              />
+            </ModalFormTrigger>
+          ) : null}
+          {canEdit ? (
+            <ConfirmDeleteForm action={deleteLead.bind(null, lead.id)} confirmMessage={dict.leads.deleteConfirm} label={dict.common.delete} />
           ) : null}
         </div>
       </div>

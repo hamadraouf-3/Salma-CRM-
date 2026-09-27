@@ -135,14 +135,12 @@ export default async function LeadsPage({
                   <td className="px-4 py-3 text-muted">{formatDate(l.createdAt)}</td>
                   {canWrite(user.role) ? (
                     <td className="px-4 py-3 text-end">
-                      {l.status !== "CONVERTED" ? (
-                        <ConfirmDeleteForm
-                          action={deleteLead.bind(null, l.id)}
-                          confirmMessage={dict.leads.deleteConfirm}
-                          label={dict.common.delete}
-                          iconOnly
-                        />
-                      ) : null}
+                      <ConfirmDeleteForm
+                        action={deleteLead.bind(null, l.id)}
+                        confirmMessage={dict.leads.deleteConfirm}
+                        label={dict.common.delete}
+                        iconOnly
+                      />
                     </td>
                   ) : null}
                 </tr>
